@@ -9,7 +9,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import {Input} from "@/components/ui/input"
-import {EmptySubscription, Subscription} from "@/Subscriptions.tsx";
+import {Subscription} from "@/Subscriptions.tsx";
 import {Form, useForm} from "react-hook-form";
 import {FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form.tsx";
 import { z } from "zod"
