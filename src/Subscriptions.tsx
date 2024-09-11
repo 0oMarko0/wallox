@@ -5,7 +5,8 @@ import {supabase} from "@/supabaseClient.ts";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
-    DropdownMenuContent, DropdownMenuItem,
+    DropdownMenuContent,
+    DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger
@@ -13,8 +14,10 @@ import {
 import {Button} from "@/components/ui/button.tsx";
 import {File, ListFilter, MoreHorizontal, PlusCircle} from "lucide-react";
 import {Badge} from "@/components/ui/badge.tsx";
+import {ConfirmationDialog} from "@/ConfirmationDialog.tsx";
+import {SubscriptionDialog} from "@/SubscriptionDialog.tsx";
 
-interface Subscription {
+export interface Subscription {
     id: bigint;
     name: string;
     frequency_payment: string;
@@ -33,7 +36,6 @@ export default function Subscriptions() {
     async function getSubscriptions() {
         const {data, error} = await supabase.from("subscriptions").select().returns<Subscription[]>();
 
-        console.log(data)
         if (error) {
             alert(error.message)
         }
@@ -42,8 +44,9 @@ export default function Subscriptions() {
     }
 
     async function deleteSubscription(id: bigint) {
-        console.log(id)
-        supabase.from("subscriptions").delete().eq("id", id)
+        await supabase.from("subscriptions").delete().eq("id", id)
+        const data = await getSubscriptions();
+        setSubscriptions(data)
     }
 
     return (
@@ -76,12 +79,14 @@ export default function Subscriptions() {
                     Export
                   </span>
                 </Button>
-                <Button size="sm" className="h-8 gap-1">
-                    <PlusCircle className="h-3.5 w-3.5"/>
-                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                <SubscriptionDialog>
+                    <Button size="sm" className="h-8 gap-1">
+                        <PlusCircle className="h-3.5 w-3.5"/>
+                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                     Add Product
                   </span>
-                </Button>
+                    </Button>
+                </SubscriptionDialog>
             </div>
             <Card>
                 <CardHeader>
@@ -131,14 +136,18 @@ export default function Subscriptions() {
                                                     size="icon"
                                                     variant="ghost"
                                                 >
-                                                    <MoreHorizontal className="h-4 w-4" />
+                                                    <MoreHorizontal className="h-4 w-4"/>
                                                     <span className="sr-only">Toggle menu</span>
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                <DropdownMenuItem className="cursor-pointer">Edit</DropdownMenuItem>
-                                                <DropdownMenuItem className="cursor-pointer" onClick={() => deleteSubscription(subscription.id)}>Delete</DropdownMenuItem>
+                                                <SubscriptionDialog subscription>
+                                                    <DropdownMenuItem className="cursor-pointer" onSelect={(e) => e.preventDefault()}>Edit</DropdownMenuItem>
+                                                </SubscriptionDialog>
+                                                <ConfirmationDialog confirmAction={() => deleteSubscription(subscription.id)} cancelAction={() => {}}>
+                                                    <DropdownMenuItem className="cursor-pointer" onSelect={(e) => e.preventDefault()}>Delete</DropdownMenuItem>
+                                                </ConfirmationDialog>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>
