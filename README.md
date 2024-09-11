@@ -53,3 +53,4 @@ export default tseslint.config({
 # TODO
 - Page the subscriptions table and add the proper info in the card footer
 - remiez code linting and formating missing some ";"
+- Skelet when the page is loading

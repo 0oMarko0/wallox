@@ -17,13 +17,26 @@ import {Badge} from "@/components/ui/badge.tsx";
 import {ConfirmationDialog} from "@/ConfirmationDialog.tsx";
 import {SubscriptionDialog} from "@/SubscriptionDialog.tsx";
 
+export enum FrequencyPayment{
+    Weekly = "Weekly",
+    Monthly = "Monthly",
+    Yearly = "Yearly",
+}
+
 export interface Subscription {
-    id: bigint;
+    id?: bigint;
     name: string;
-    frequency_payment: string;
+    frequency_payment: FrequencyPayment;
     next_payment_date: Date;
     price: number;
-    created_at: Date;
+    created_at?: Date;
+}
+
+export const EmptySubscription: Subscription = {
+    name: "",
+    frequency_payment: FrequencyPayment.Weekly,
+    next_payment_date: new Date(),
+    price: 0
 }
 
 export default function Subscriptions() {
