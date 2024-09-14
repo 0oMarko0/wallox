@@ -8,7 +8,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog.tsx"
 
 interface ConfirmationDialogProps {
     confirmAction: () => void;
@@ -21,14 +21,13 @@ export function ConfirmationDialog(props: ConfirmationDialogProps) {
         <AlertDialog>
             <AlertDialogTrigger asChild>
                 {props.children}
-                {/*<Button variant="outline">test</Button>*/}
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription>
                         This action cannot be undone. This will permanently delete your
-                        account and remove your data from our servers.
+                        subscription.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

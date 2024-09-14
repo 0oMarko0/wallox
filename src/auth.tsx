@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {supabase} from "@/supabaseClient.ts";
+import {Supabase} from "@/supabase-client.ts";
 import {Button} from "@/components/ui/button.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Label} from "@/components/ui/label.tsx";
@@ -12,7 +12,7 @@ export default function Auth() {
 
     const handleLogin = async () => {
         setLoading(true);
-        const { error } = await supabase.auth.signInWithOtp({email})
+        const { error } = await Supabase.auth.signInWithOtp({email})
 
         if (error) {
             alert(error.message)

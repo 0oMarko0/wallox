@@ -54,3 +54,9 @@ export default tseslint.config({
 - Page the subscriptions table and add the proper info in the card footer
 - remiez code linting and formating missing some ";"
 - Skelet when the page is loading
+- rename frequency payment col
+- add payment frequency (number) col
+- schedule lastPaymentdate update
+- Search 
+- paging
+- empty state and skeleton when loading

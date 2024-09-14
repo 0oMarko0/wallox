@@ -1,7 +1,6 @@
-import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,} from "@/components/ui/card"
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
+import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,} from "@/components/ui/card.tsx"
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table.tsx"
 import {useEffect, useState} from "react";
-import {supabase} from "@/supabaseClient.ts";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -14,56 +13,43 @@ import {
 import {Button} from "@/components/ui/button.tsx";
 import {File, ListFilter, MoreHorizontal, PlusCircle} from "lucide-react";
 import {Badge} from "@/components/ui/badge.tsx";
-import {ConfirmationDialog} from "@/ConfirmationDialog.tsx";
-import {SubscriptionDialog} from "@/SubscriptionDialog.tsx";
-
-export enum FrequencyPayment{
-    Weekly = "Weekly",
-    Monthly = "Monthly",
-    Yearly = "Yearly",
-}
-
-export interface Subscription {
-    id?: bigint;
-    name: string;
-    frequency_payment: FrequencyPayment;
-    next_payment_date: Date;
-    price: number;
-    created_at?: Date;
-}
-
-export const EmptySubscription: Subscription = {
-    name: "",
-    frequency_payment: FrequencyPayment.Weekly,
-    next_payment_date: new Date(),
-    price: 0
-}
+import {ConfirmationDialog} from "@/components/confirmation-dialog.tsx";
+import {SubscriptionDialog} from "@/components/subscription-dialog.tsx";
+import {
+    CreateOrUpdateSubscription,
+    DeleteSubscription,
+    ListSubscriptions,
+    NextPaymentDate,
+    Subscription
+} from "@/subscription.ts";
 
 export default function Subscriptions() {
     const [subscriptions, setSubscriptions] = useState<Subscription[] | null>([])
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
     useEffect(() => {
-        getSubscriptions().then(subscription => setSubscriptions(subscription));
+        setIsLoading(true)
+        ListSubscriptions().then(subscriptions => {
+            setSubscriptions(subscriptions)
+            setIsLoading(false)
+        });
     }, [])
 
-    async function getSubscriptions() {
-        const {data, error} = await supabase.from("subscriptions").select().returns<Subscription[]>();
-
-        if (error) {
-            alert(error.message)
+    async function deleteSubscription(subscription: Subscription) {
+        if(subscription.id !== undefined) {
+            await DeleteSubscription(subscription)
+            setSubscriptions(await ListSubscriptions())
         }
-
-        return data;
     }
 
-    async function deleteSubscription(id: bigint) {
-        await supabase.from("subscriptions").delete().eq("id", id)
-        const data = await getSubscriptions();
-        setSubscriptions(data)
+    async function createOrUpdateSubscription(subscription: Subscription) {
+        await CreateOrUpdateSubscription(subscription)
+        setSubscriptions(await ListSubscriptions())
     }
 
     return (
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+            {isLoading ?? <div>TEST</div>}
             <div className="ml-auto flex items-center gap-2">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -92,7 +78,7 @@ export default function Subscriptions() {
                     Export
                   </span>
                 </Button>
-                <SubscriptionDialog>
+                <SubscriptionDialog onSubmit={createOrUpdateSubscription}>
                     <Button size="sm" className="h-8 gap-1">
                         <PlusCircle className="h-3.5 w-3.5"/>
                         <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
@@ -133,10 +119,10 @@ export default function Subscriptions() {
                                         {subscription.name}
                                     </TableCell>
                                     <TableCell className="font-medium">
-                                        <Badge variant="outline">{subscription.frequency_payment}</Badge>
+                                        <Badge variant="outline">{subscription.payment_frequency}</Badge>
                                     </TableCell>
                                     <TableCell className="font-medium">
-                                        {subscription.next_payment_date.toString()}
+                                        {NextPaymentDate(subscription)?.toDateString()}
                                     </TableCell>
                                     <TableCell className="font-medium">
                                         ${subscription.price}
@@ -155,11 +141,16 @@ export default function Subscriptions() {
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                <SubscriptionDialog subscription>
-                                                    <DropdownMenuItem className="cursor-pointer" onSelect={(e) => e.preventDefault()}>Edit</DropdownMenuItem>
+                                                <SubscriptionDialog subscription={subscription} onSubmit={createOrUpdateSubscription}>
+                                                    <DropdownMenuItem className="cursor-pointer"
+                                                                      onSelect={(e) => e.preventDefault()}>Edit</DropdownMenuItem>
                                                 </SubscriptionDialog>
-                                                <ConfirmationDialog confirmAction={() => deleteSubscription(subscription.id)} cancelAction={() => {}}>
-                                                    <DropdownMenuItem className="cursor-pointer" onSelect={(e) => e.preventDefault()}>Delete</DropdownMenuItem>
+                                                <ConfirmationDialog
+                                                    confirmAction={() => deleteSubscription(subscription)}
+                                                    cancelAction={() => {
+                                                    }}>
+                                                    <DropdownMenuItem className="cursor-pointer"
+                                                                      onSelect={(e) => e.preventDefault()}>Delete</DropdownMenuItem>
                                                 </ConfirmationDialog>
                                             </DropdownMenuContent>
                                         </DropdownMenu>

@@ -1,18 +1,18 @@
-import Auth from "@/Auth.tsx";
+import Auth from "@/auth.tsx";
 import {useEffect, useState} from "react";
-import {supabase} from "@/supabaseClient.ts";
-import Subscriptions from "@/Subscriptions.tsx";
+import {Supabase} from "@/supabase-client.ts";
+import Subscriptions from "@/components/subscriptions-table.tsx";
 import {Session} from "@supabase/supabase-js";
 
 function App() {
     const [session, setSession] = useState<Session | null>(null)
 
     useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session } }) => {
+        Supabase.auth.getSession().then(({ data: { session } }) => {
             setSession(session)
         })
 
-        const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data } = Supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session)
         })
 
