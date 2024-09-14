@@ -22,7 +22,7 @@ export default tseslint.config({
       tsconfigRootDir: import.meta.dirname,
     },
   },
-})
+});
 ```
 
 - Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
@@ -31,7 +31,7 @@ export default tseslint.config({
 
 ```js
 // eslint.config.js
-import react from 'eslint-plugin-react'
+import react from 'eslint-plugin-react';
 
 export default tseslint.config({
   // Set the react version
@@ -46,17 +46,17 @@ export default tseslint.config({
     ...react.configs.recommended.rules,
     ...react.configs['jsx-runtime'].rules,
   },
-})
+});
 ```
 
-
 # TODO
+
 - Page the subscriptions table and add the proper info in the card footer
 - remiez code linting and formating missing some ";"
 - Skelet when the page is loading
 - rename frequency payment col
 - add payment frequency (number) col
 - schedule lastPaymentdate update
-- Search 
+- Search
 - paging
 - empty state and skeleton when loading

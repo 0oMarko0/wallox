@@ -1,5 +1,5 @@
 export enum Frequency {
-    WEEK = "week",
-    MONTH = "month",
-    YEAR = "year",
+  WEEK = 'week',
+  MONTH = 'month',
+  YEAR = 'year',
 }
