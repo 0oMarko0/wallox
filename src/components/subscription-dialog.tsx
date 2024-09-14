@@ -44,14 +44,21 @@ export function SubscriptionDialog(props: SubscriptionDialogProps) {
     })
 
     useEffect(() => {
-        ListCategories().then(categories => setCategories(categories));
-        ListPaymentMethods().then(paymentMethods => setPaymentMethods(paymentMethods));
+        ListCategories().then(categories => {
+            setCategories(categories)
+            // doesn't work
+            DefaultSubscription.category_id = categories[0].id
+        });
+        ListPaymentMethods().then(paymentMethods =>  {
+            setPaymentMethods(paymentMethods)
+            // doesn't work
+            DefaultSubscription.payment_methods_id = paymentMethods[0].id
+        });
     }, [])
 
 
     async function onSubmit(value: z.infer<typeof SubscriptionSchema>) {
         props.onSubmit(value as Subscription)
-        // await CreateOrUpdateSubscription(value as Subscription)
         setIsOpen(false)
     }
 
