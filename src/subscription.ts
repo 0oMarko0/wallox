@@ -2,6 +2,9 @@ import { z } from 'zod';
 import { Frequency } from '@/frequency.ts';
 import { HandleError, Supabase } from '@/supabase-client.ts';
 import { add } from 'date-fns';
+import { CategorySchema } from '@/category.ts';
+import { PaymentMethodsSchema } from '@/payment-methods.ts';
+import { Page, PageToRange } from '@/page.ts';
 
 const SUBSCRIPTION_TABLE = 'subscriptions';
 
@@ -19,6 +22,14 @@ const SubscriptionSchema = z.object({
   category_id: z.number(),
   paid_by: z.string().min(0),
   note: z.string().min(0),
+  category: CategorySchema.optional(),
+  payment_methods: PaymentMethodsSchema.optional(),
+});
+
+const FormSubscriptionSchema = SubscriptionSchema.omit({
+  id: true,
+  category: true,
+  payment_methods: true,
 });
 
 type Subscription = z.infer<typeof SubscriptionSchema>;
@@ -46,7 +57,8 @@ const NextPaymentDate = (subscription: Subscription) => {
   }
 };
 
-const ListSubscriptions = async (): Promise<Subscription[]> => {
+const ListSubscriptions = async (page: Page): Promise<Subscription[]> => {
+  const { start, end } = PageToRange(page);
   const { data, error } = await Supabase.from(SUBSCRIPTION_TABLE)
     .select(
       `
@@ -59,20 +71,33 @@ const ListSubscriptions = async (): Promise<Subscription[]> => {
           paid_by,
           note,
           created_at,
+          category_id,
+          payment_methods_id,
           categories (name),
           payment_methods (name)
     `,
     )
     .order('created_at', { ascending: false })
+    .range(start, end)
     .returns<Subscription[]>();
 
   HandleError(error);
 
-  return data === null ? [] : data;
+  if (data === null || data === undefined) {
+    return [];
+  }
+
+  return data.map((subscription) => ({
+    ...subscription,
+    last_payment_date: new Date(subscription.last_payment_date),
+  }));
 };
 
-const CreateOrUpdateSubscription = async (subscription: Subscription) => {
-  return Supabase.from(SUBSCRIPTION_TABLE).upsert(subscription);
+const CountSubscriptions = async () => {
+  const { error, count } = await Supabase.from(SUBSCRIPTION_TABLE).select('*', { count: 'exact' });
+  HandleError(error);
+
+  return count;
 };
 
 const DeleteSubscription = async (subscription: Subscription) => {
@@ -80,12 +105,34 @@ const DeleteSubscription = async (subscription: Subscription) => {
   HandleError(error);
 };
 
+const CreateOrUpdateSubscription = async (subscription: Subscription) => {
+  if (subscription?.id) {
+    await UpdateSubscription(subscription.id, subscription);
+  } else {
+    await CreateSubscription(subscription);
+  }
+};
+
+const UpdateSubscription = async (id: string, subscription: Subscription) => {
+  const { error } = await Supabase.from(SUBSCRIPTION_TABLE).update(subscription).eq('id', id);
+  HandleError(error);
+};
+
+const CreateSubscription = async (subscription: Subscription) => {
+  const { error } = await Supabase.from(SUBSCRIPTION_TABLE).insert(subscription).select();
+  HandleError(error);
+};
+
 export {
   SubscriptionSchema,
+  FormSubscriptionSchema,
   DefaultSubscription,
   NextPaymentDate,
   ListSubscriptions,
-  CreateOrUpdateSubscription,
+  CountSubscriptions,
   DeleteSubscription,
+  CreateOrUpdateSubscription,
+  CreateSubscription,
+  UpdateSubscription,
 };
 export type { Subscription };

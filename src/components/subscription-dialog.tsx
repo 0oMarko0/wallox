@@ -19,7 +19,13 @@ import { cn } from '@/lib/utils.ts';
 import { format } from 'date-fns';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx';
 import { Textarea } from '@/components/ui/textarea.tsx';
-import { DefaultSubscription, Subscription, SubscriptionSchema } from '@/subscription.ts';
+import {
+  DefaultSubscription,
+  Subscription,
+  FormSubscriptionSchema,
+  UpdateSubscription,
+  CreateSubscription,
+} from '@/subscription.ts';
 import { ReactNode, useEffect, useState } from 'react';
 import { Category, ListCategories } from '@/category.ts';
 import { ListPaymentMethods, PaymentMethods } from '@/payment-methods.ts';
@@ -38,26 +44,28 @@ export function SubscriptionDialog(props: SubscriptionDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethods[]>([]);
-  const form = useForm<z.infer<typeof SubscriptionSchema>>({
-    resolver: zodResolver(SubscriptionSchema),
-    defaultValues: { ...subscription },
+  const form = useForm<z.infer<typeof FormSubscriptionSchema>>({
+    resolver: zodResolver(FormSubscriptionSchema),
+    defaultValues: DefaultSubscription,
+    values: props.subscription,
   });
 
   useEffect(() => {
     ListCategories().then((categories) => {
       setCategories(categories);
-      // doesn't work
-      DefaultSubscription.category_id = categories[0].id;
     });
     ListPaymentMethods().then((paymentMethods) => {
       setPaymentMethods(paymentMethods);
-      // doesn't work
-      DefaultSubscription.payment_methods_id = paymentMethods[0].id;
     });
   }, []);
 
-  async function onSubmit(value: z.infer<typeof SubscriptionSchema>) {
-    props.onSubmit(value as Subscription);
+  async function onSubmit(value: z.infer<typeof FormSubscriptionSchema>) {
+    if (subscription?.id) {
+      await UpdateSubscription(subscription.id, { ...value });
+    } else {
+      await CreateSubscription(value);
+    }
+
     setIsOpen(false);
   }
 
@@ -74,7 +82,12 @@ export function SubscriptionDialog(props: SubscriptionDialogProps) {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form
+            onSubmit={form.handleSubmit(
+              (value) => onSubmit(value),
+              (e) => console.log(e),
+            )}
+            className="space-y-8">
             <div className="flex flex-row space-x-3 w-full">
               <FormField
                 control={form.control}
@@ -185,7 +198,7 @@ export function SubscriptionDialog(props: SubscriptionDialogProps) {
                 <FormItem>
                   <FormLabel>Payment methods</FormLabel>
                   <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value?.toString()}>
+                    <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value?.toString()}>
                       <SelectTrigger className="w-full">
                         <SelectValue>
                           {paymentMethods.find((pm) => pm.id === field.value)?.name || 'Select Payment Methods'}
@@ -194,7 +207,7 @@ export function SubscriptionDialog(props: SubscriptionDialogProps) {
                       <SelectContent>
                         <SelectGroup>
                           {paymentMethods.map((methods) => (
-                            <SelectItem key={methods.id} value={methods.id}>
+                            <SelectItem key={methods.id} value={methods.id.toString()}>
                               {methods.name}
                             </SelectItem>
                           ))}
@@ -213,7 +226,7 @@ export function SubscriptionDialog(props: SubscriptionDialogProps) {
                 <FormItem>
                   <FormLabel>Category</FormLabel>
                   <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value?.toString()}>
+                    <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value.toString()}>
                       <SelectTrigger className="w-full">
                         <SelectValue>
                           {categories.find((category) => category.id === field.value)?.name || 'Select Category'}
@@ -222,7 +235,7 @@ export function SubscriptionDialog(props: SubscriptionDialogProps) {
                       <SelectContent>
                         <SelectGroup>
                           {categories.map((category) => (
-                            <SelectItem key={category.id} value={category.id}>
+                            <SelectItem key={category.id} value={category.id.toString()}>
                               {category.name}
                             </SelectItem>
                           ))}

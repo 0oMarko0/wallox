@@ -12,7 +12,8 @@ import {
 
 interface ConfirmationDialogProps {
   confirmAction: () => void;
-  cancelAction: () => void;
+  cancelAction?: () => void;
+  toDelete: string;
   children: React.ReactNode;
 }
 
@@ -24,7 +25,7 @@ export function ConfirmationDialog(props: ConfirmationDialogProps) {
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your subscription.
+            This action cannot be undone. This will permanently delete your {props.toDelete}.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
