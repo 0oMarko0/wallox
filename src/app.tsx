@@ -4,7 +4,6 @@ import { Session } from '@supabase/supabase-js';
 import { ThemeProvider } from '@/components/theme-provider.tsx';
 import Auth from '@/auth.tsx';
 import Subscriptions from '@/components/subscriptions-table.tsx';
-import { SiteHeader } from '@/components/header.tsx';
 
 function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -29,7 +28,6 @@ function App() {
         </div>
       ) : (
         <div className="flex flex-col">
-          <SiteHeader />
           <div className="container mx-auto h-content mt-8">
             <Subscriptions />
           </div>

@@ -60,3 +60,8 @@ export default tseslint.config({
 - Search
 - paging
 - empty state and skeleton when loading
+- add mobile navigation and layout
+- add a search
+- use tanstack router to open model for subscriptions
+- active/inactive status
+- dynamic table height in function of page height

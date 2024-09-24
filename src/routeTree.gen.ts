@@ -11,13 +11,37 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as SubscriptionsImport } from './routes/subscriptions'
+import { Route as SettingsImport } from './routes/settings'
+import { Route as DashboardImport } from './routes/dashboard'
 import { Route as IndexImport } from './routes/index'
+import { Route as SettingsProfileImport } from './routes/settings/profile'
 
 // Create/Update Routes
+
+const SubscriptionsRoute = SubscriptionsImport.update({
+  path: '/subscriptions',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const SettingsRoute = SettingsImport.update({
+  path: '/settings',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DashboardRoute = DashboardImport.update({
+  path: '/dashboard',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const SettingsProfileRoute = SettingsProfileImport.update({
+  path: '/profile',
+  getParentRoute: () => SettingsRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -31,39 +55,108 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardImport
+      parentRoute: typeof rootRoute
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsImport
+      parentRoute: typeof rootRoute
+    }
+    '/subscriptions': {
+      id: '/subscriptions'
+      path: '/subscriptions'
+      fullPath: '/subscriptions'
+      preLoaderRoute: typeof SubscriptionsImport
+      parentRoute: typeof rootRoute
+    }
+    '/settings/profile': {
+      id: '/settings/profile'
+      path: '/profile'
+      fullPath: '/settings/profile'
+      preLoaderRoute: typeof SettingsProfileImport
+      parentRoute: typeof SettingsImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface SettingsRouteChildren {
+  SettingsProfileRoute: typeof SettingsProfileRoute
+}
+
+const SettingsRouteChildren: SettingsRouteChildren = {
+  SettingsProfileRoute: SettingsProfileRoute,
+}
+
+const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
+  SettingsRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/settings': typeof SettingsRouteWithChildren
+  '/subscriptions': typeof SubscriptionsRoute
+  '/settings/profile': typeof SettingsProfileRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/settings': typeof SettingsRouteWithChildren
+  '/subscriptions': typeof SubscriptionsRoute
+  '/settings/profile': typeof SettingsProfileRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/settings': typeof SettingsRouteWithChildren
+  '/subscriptions': typeof SubscriptionsRoute
+  '/settings/profile': typeof SettingsProfileRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/settings'
+    | '/subscriptions'
+    | '/settings/profile'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/dashboard' | '/settings' | '/subscriptions' | '/settings/profile'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/settings'
+    | '/subscriptions'
+    | '/settings/profile'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRoute: typeof DashboardRoute
+  SettingsRoute: typeof SettingsRouteWithChildren
+  SubscriptionsRoute: typeof SubscriptionsRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRoute: DashboardRoute,
+  SettingsRoute: SettingsRouteWithChildren,
+  SubscriptionsRoute: SubscriptionsRoute,
 }
 
 export const routeTree = rootRoute
@@ -78,11 +171,30 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/",
+        "/dashboard",
+        "/settings",
+        "/subscriptions"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/dashboard": {
+      "filePath": "dashboard.tsx"
+    },
+    "/settings": {
+      "filePath": "settings.tsx",
+      "children": [
+        "/settings/profile"
+      ]
+    },
+    "/subscriptions": {
+      "filePath": "subscriptions.tsx"
+    },
+    "/settings/profile": {
+      "filePath": "settings/profile.tsx",
+      "parent": "/settings"
     }
   }
 }

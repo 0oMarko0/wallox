@@ -1,6 +1,5 @@
 import { HandleError, Supabase } from '@/supabase-client.ts';
 import { z } from 'zod';
-import { Subscription } from '@/subscription.ts';
 
 const CATEGORIES_TABLE = 'categories';
 
