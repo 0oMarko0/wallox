@@ -32,6 +32,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination.tsx';
+import { Link } from '@tanstack/react-router';
 
 export default function Subscriptions() {
   const [subscriptions, setSubscriptions] = useState<Subscription[] | null>([]);
@@ -132,12 +133,12 @@ export default function Subscriptions() {
           <File className="h-3.5 w-3.5" />
           <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Export</span>
         </Button>
-        <SubscriptionDialog onSubmit={createOrUpdate}>
+        <Link to="/subscriptions/new">
           <Button size="sm" className="h-8 gap-1">
             <PlusCircle className="h-3.5 w-3.5" />
             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Add Product</span>
           </Button>
-        </SubscriptionDialog>
+        </Link>
       </div>
       <Card>
         <CardHeader>
@@ -178,11 +179,11 @@ export default function Subscriptions() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <SubscriptionDialog subscription={subscription} onSubmit={createOrUpdate}>
+                        <Link to="/subscriptions/$subscriptionId" params={{ subscriptionId: subscription.id }}>
                           <DropdownMenuItem className="cursor-pointer" onSelect={(e) => e.preventDefault()}>
                             Edit
                           </DropdownMenuItem>
-                        </SubscriptionDialog>
+                        </Link>
                         <ConfirmationDialog
                           toDelete="Subscription"
                           confirmAction={() => deleteSubscription(subscription)}>

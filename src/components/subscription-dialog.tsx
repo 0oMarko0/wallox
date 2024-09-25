@@ -26,17 +26,17 @@ import {
   UpdateSubscription,
   CreateSubscription,
 } from '@/subscription.ts';
-import { ReactNode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Category, ListCategories } from '@/category.ts';
 import { ListPaymentMethods, PaymentMethods } from '@/payment-methods.ts';
 import { Frequency } from '@/frequency.ts';
+import { useRouter } from '@tanstack/react-router';
 
 interface SubscriptionDialogProps {
-  children: ReactNode;
   subscription?: Subscription;
-  onSubmit: (subscription: Subscription) => void;
 }
 
+// need to have the id in the path to fetch
 export function SubscriptionDialog(props: SubscriptionDialogProps) {
   const isEditing = props.subscription !== undefined;
   const subscription = isEditing ? props.subscription : DefaultSubscription;
@@ -44,11 +44,17 @@ export function SubscriptionDialog(props: SubscriptionDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethods[]>([]);
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof FormSubscriptionSchema>>({
     resolver: zodResolver(FormSubscriptionSchema),
     defaultValues: DefaultSubscription,
     values: props.subscription,
   });
+
+  useEffect(() => {
+    setIsOpen(true);
+  }, []);
 
   useEffect(() => {
     ListCategories().then((categories) => {
@@ -70,8 +76,16 @@ export function SubscriptionDialog(props: SubscriptionDialogProps) {
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>{props.children}</DialogTrigger>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) {
+          router.navigate({
+            to: '/subscriptions',
+          });
+        }
+      }}>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
           <DialogTitle>{isEditing ? `Edit ${props.subscription?.name}` : 'Add subscription'}</DialogTitle>

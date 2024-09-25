@@ -4,6 +4,17 @@ import { Session } from '@supabase/supabase-js';
 import { ThemeProvider } from '@/components/theme-provider.tsx';
 import Auth from '@/auth.tsx';
 import Subscriptions from '@/components/subscriptions-table.tsx';
+import { createRouter, RouterProvider } from '@tanstack/react-router';
+import { routeTree } from '@/routeTree.gen.ts';
+import { DialogTest } from '@/components/dialog-test.tsx';
+const router = createRouter({ routeTree });
+
+// Register the router instance for type safety
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router;
+  }
+}
 
 function App() {
   const [session, setSession] = useState<Session | null>(null);

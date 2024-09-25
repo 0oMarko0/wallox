@@ -93,6 +93,14 @@ const ListSubscriptions = async (page: Page): Promise<Subscription[]> => {
   }));
 };
 
+const FetchSubscription = async (id: string): Promise<Subscription | null> => {
+  const { error, data } = await Supabase.from(SUBSCRIPTION_TABLE).select().eq('id', id).maybeSingle();
+
+  HandleError(error);
+
+  return data as Subscription;
+};
+
 const CountSubscriptions = async () => {
   const { error, count } = await Supabase.from(SUBSCRIPTION_TABLE).select('*', { count: 'exact' });
   HandleError(error);
@@ -131,6 +139,7 @@ export {
   ListSubscriptions,
   CountSubscriptions,
   DeleteSubscription,
+  FetchSubscription,
   CreateOrUpdateSubscription,
   CreateSubscription,
   UpdateSubscription,

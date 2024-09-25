@@ -40,6 +40,11 @@ function Root(props: RootProps) {
               tooltip: 'Setting',
               page: '/settings',
             },
+            {
+              node: <Settings className="h-5 w-5" />,
+              tooltip: 'Setting',
+              page: '/modal',
+            },
           ]}
         />
       </aside>
