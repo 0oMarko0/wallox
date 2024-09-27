@@ -1,6 +1,6 @@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 import { Link } from '@tanstack/react-router';
-import { Home, LineChart, LogOut, Package, Settings, ShoppingCart, Users2 } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { Avatar } from '@/components/header.tsx';
 import { ReactNode } from 'react';
 

@@ -1,6 +1,5 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router';
-import { Dashboard } from '@/tmp.tsx';
-import { Home, LayoutDashboard, LineChart, Package, Settings, ShoppingCart, User, Users2, Wallet } from 'lucide-react';
+import { LayoutDashboard, Settings, Wallet } from 'lucide-react';
 import { Navigation } from '@/components/navigation.tsx';
 import { ReactNode } from 'react';
 
@@ -40,17 +39,11 @@ function Root(props: RootProps) {
               tooltip: 'Setting',
               page: '/settings',
             },
-            {
-              node: <Settings className="h-5 w-5" />,
-              tooltip: 'Setting',
-              page: '/modal',
-            },
           ]}
         />
       </aside>
-      <div className="min-h-screen w-full">
-        <div className="container pl-14 mx-auto mt-8">{props.children}</div>
-      </div>
+      {/*<div className="container pl-14 mx-auto mt-8">{props.children}</div>*/}
+      <div className="pl-14 min-h-screen w-ful">{props.children}</div>
     </div>
   );
 }

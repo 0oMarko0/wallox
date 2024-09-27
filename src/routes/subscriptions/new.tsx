@@ -1,6 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { SubscriptionDialog } from '@/components/subscription-dialog.tsx';
+import { SubscriptionForm } from '@/components/subscription-form.tsx';
 
 export const Route = createFileRoute('/subscriptions/new')({
-  component: () => <SubscriptionDialog />,
+  component: () => <NewSubscription />,
 });
+
+function NewSubscription() {
+  return (
+    <div className="mx-auto max-w-3xl">
+      <SubscriptionForm />
+    </div>
+  );
+}
