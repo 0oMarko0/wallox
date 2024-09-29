@@ -23,6 +23,7 @@ import { Category, ListCategories } from '@/category.ts';
 import { ListPaymentMethods, PaymentMethods } from '@/payment-methods.ts';
 import { Frequency } from '@/frequency.ts';
 import { Link } from '@tanstack/react-router';
+import { FileInput } from '@/components/file-input.tsx';
 
 interface SubscriptionDialogProps {
   subscription?: Subscription;
@@ -67,6 +68,11 @@ export function SubscriptionForm(props: SubscriptionDialogProps) {
           (e) => console.log(e),
         )}
         className="space-y-8">
+        <Controller
+          control={form.control}
+          name="logo"
+          render={({ field }) => <FileInput onChange={field.onChange} value={field.value} />}
+        />
         <div className="flex flex-row space-x-3 w-full">
           <FormField
             control={form.control}

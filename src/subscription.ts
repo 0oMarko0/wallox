@@ -11,6 +11,7 @@ const SUBSCRIPTION_TABLE = 'subscriptions';
 const SubscriptionSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(2).max(50),
+  logo: z.instanceof(File).optional(),
   payment_every: z.coerce.number().min(1).default(1),
   payment_frequency: z.string().min(0).default(Frequency.MONTH),
   last_payment_date: z.date().default(new Date()),
@@ -24,6 +25,11 @@ const SubscriptionSchema = z.object({
   note: z.string().min(0),
   categories: CategorySchema.optional(),
   payment_methods: PaymentMethodsSchema.optional(),
+  file: z
+    .instanceof(File)
+    .refine((file) => file.size <= 5 * 1024 * 1024, 'File size must be under 5MB')
+    .refine((file) => ['image/jpeg', 'image/png'].includes(file.type), 'Only .jpeg or .png files are allowed')
+    .optional(),
 });
 
 const FormSubscriptionSchema = SubscriptionSchema.omit({

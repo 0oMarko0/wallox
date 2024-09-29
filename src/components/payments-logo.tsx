@@ -15,5 +15,4 @@ Object.keys(icons).forEach((filePath) => {
   }
 });
 
-console.log('paymentMethods', PaymentMethods);
 export default PaymentMethods;
