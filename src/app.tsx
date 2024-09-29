@@ -3,7 +3,7 @@
 // import { Session } from '@supabase/supabase-js';
 // import { ThemeProvider } from '@/components/theme-provider.tsx';
 // import Auth from '@/auth.tsx';
-// import Subscriptions from '@/components/subscriptions-table.tsx';
+// import Subscriptions from '@/components/subscriptions-list.tsx';
 // import { createRouter } from '@tanstack/react-router';
 // import { routeTree } from '@/routeTree.gen.ts';
 //

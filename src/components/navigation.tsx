@@ -8,6 +8,9 @@ export interface NavigationItem {
   node: ReactNode;
   tooltip: string;
   page: string;
+  search?: {
+    [key: string]: string | number | boolean;
+  };
 }
 
 export interface NavigationProps {
@@ -27,6 +30,7 @@ export function Navigation(props: NavigationProps) {
               <TooltipTrigger asChild>
                 <Link
                   to={item.page}
+                  search={item.search}
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8">
                   {item.node}
                   <span className="sr-only">{item.tooltip}</span>

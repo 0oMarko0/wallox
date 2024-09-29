@@ -4,7 +4,7 @@ import { HandleError, Supabase } from '@/supabase-client.ts';
 import { add } from 'date-fns';
 import { CategorySchema } from '@/category.ts';
 import { PaymentMethodsSchema } from '@/payment-methods.ts';
-import { Page, PageToRange } from '@/page.ts';
+import { EmptyPage, IPage, IPageable, PageToRange } from '@/IPage.ts';
 
 const SUBSCRIPTION_TABLE = 'subscriptions';
 
@@ -22,13 +22,13 @@ const SubscriptionSchema = z.object({
   category_id: z.number(),
   paid_by: z.string().min(0),
   note: z.string().min(0),
-  category: CategorySchema.optional(),
+  categories: CategorySchema.optional(),
   payment_methods: PaymentMethodsSchema.optional(),
 });
 
 const FormSubscriptionSchema = SubscriptionSchema.omit({
   id: true,
-  category: true,
+  categories: true,
   payment_methods: true,
 });
 
@@ -57,8 +57,9 @@ const NextPaymentDate = (subscription: Subscription) => {
   }
 };
 
-const ListSubscriptions = async (page: Page): Promise<Subscription[]> => {
+const ListSubscriptions = async (page: IPage): Promise<IPageable<Subscription>> => {
   const { start, end } = PageToRange(page);
+  const { count } = await Supabase.from(SUBSCRIPTION_TABLE).select('*', { count: 'exact' });
   const { data, error } = await Supabase.from(SUBSCRIPTION_TABLE)
     .select(
       `
@@ -84,13 +85,19 @@ const ListSubscriptions = async (page: Page): Promise<Subscription[]> => {
   HandleError(error);
 
   if (data === null || data === undefined) {
-    return [];
+    return EmptyPage;
   }
 
-  return data.map((subscription) => ({
+  data.map((subscription) => ({
     ...subscription,
     last_payment_date: new Date(subscription.last_payment_date),
   }));
+
+  return {
+    ...page,
+    items: data,
+    total: count as number,
+  };
 };
 
 const FetchSubscription = async (id: string): Promise<Subscription | null> => {
@@ -101,24 +108,9 @@ const FetchSubscription = async (id: string): Promise<Subscription | null> => {
   return data as Subscription;
 };
 
-const CountSubscriptions = async () => {
-  const { error, count } = await Supabase.from(SUBSCRIPTION_TABLE).select('*', { count: 'exact' });
-  HandleError(error);
-
-  return count;
-};
-
 const DeleteSubscription = async (subscription: Subscription) => {
   const { error } = await Supabase.from(SUBSCRIPTION_TABLE).delete().eq('id', subscription.id);
   HandleError(error);
-};
-
-const CreateOrUpdateSubscription = async (subscription: Subscription) => {
-  if (subscription?.id) {
-    await UpdateSubscription(subscription.id, subscription);
-  } else {
-    await CreateSubscription(subscription);
-  }
 };
 
 const UpdateSubscription = async (id: string, subscription: Subscription) => {
@@ -137,10 +129,8 @@ export {
   DefaultSubscription,
   NextPaymentDate,
   ListSubscriptions,
-  CountSubscriptions,
   DeleteSubscription,
   FetchSubscription,
-  CreateOrUpdateSubscription,
   CreateSubscription,
   UpdateSubscription,
 };

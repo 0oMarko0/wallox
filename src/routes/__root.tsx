@@ -28,6 +28,10 @@ function Root(props: RootProps) {
               node: <Wallet className="h-5 w-5" />,
               tooltip: 'Subscriptions',
               page: '/subscriptions',
+              search: {
+                page: 0,
+                perPage: 25,
+              },
             },
             {
               node: <LayoutDashboard className="h-5 w-5" />,

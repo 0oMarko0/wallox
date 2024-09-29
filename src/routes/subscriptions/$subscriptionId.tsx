@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { FetchSubscription } from '@/subscription.ts';
+import { FetchSubscription, Subscription } from '@/subscription.ts';
 import { SubscriptionForm } from '@/components/subscription-form.tsx';
 import { Page } from '@/components/page.tsx';
 
@@ -9,7 +9,7 @@ export const Route = createFileRoute('/subscriptions/$subscriptionId')({
 });
 
 function EditSubscription() {
-  const subscription = Route.useLoaderData();
+  const subscription = Route.useLoaderData() as Subscription;
 
   return (
     <Page title="Subscriptions" description="Edit your subscription">
