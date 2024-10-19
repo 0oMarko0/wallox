@@ -18,18 +18,19 @@ import {
   Subscription,
   UpdateSubscription,
 } from '@/subscription.ts';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Category, ListCategories } from '@/category.ts';
 import { ListPaymentMethods, PaymentMethods } from '@/payment-methods.ts';
 import { Frequency } from '@/frequency.ts';
 import { Link } from '@tanstack/react-router';
 import { FileInput } from '@/components/file-input.tsx';
+import { DownloadFile, FileBlob, UploadFile } from '@/files.ts';
 
 interface SubscriptionDialogProps {
   subscription?: Subscription;
 }
 
-// need to have the id in the path to fetch
+// TODO: need to have the id in the path to fetch
 export function SubscriptionForm(props: SubscriptionDialogProps) {
   const isEditing = props.subscription !== undefined;
   const subscription = isEditing ? props.subscription : DefaultSubscription;
@@ -43,6 +44,10 @@ export function SubscriptionForm(props: SubscriptionDialogProps) {
     values: props.subscription,
   });
 
+  console.log('form props: ', props.subscription);
+
+  const fileId = useMemo(() => subscription?.file_id, [subscription]);
+
   useEffect(() => {
     ListCategories().then((categories) => {
       setCategories(categories);
@@ -50,13 +55,23 @@ export function SubscriptionForm(props: SubscriptionDialogProps) {
     ListPaymentMethods().then((paymentMethods) => {
       setPaymentMethods(paymentMethods);
     });
-  }, []);
+    if (isEditing) {
+      DownloadFile(fileId as number).then((file) => {
+        form.setValue('file', file);
+      });
+    }
+  }, [isEditing, fileId]);
 
   async function onSubmit(value: z.infer<typeof FormSubscriptionSchema>) {
+    console.log('onSubmit', value);
     if (subscription?.id) {
-      await UpdateSubscription(subscription.id, { ...value });
+      const data = (await UploadFile(value.file as File, 'logo')) as FileBlob;
+      delete value.file;
+      await UpdateSubscription(subscription.id, { ...value, file_id: data.id });
     } else {
-      await CreateSubscription(value);
+      const data = (await UploadFile(value.file as File, 'logo')) as FileBlob;
+      delete value.file;
+      await CreateSubscription({ ...value, file_id: data.id });
     }
   }
 
@@ -70,7 +85,7 @@ export function SubscriptionForm(props: SubscriptionDialogProps) {
         className="space-y-8">
         <Controller
           control={form.control}
-          name="logo"
+          name="file"
           render={({ field }) => <FileInput onChange={field.onChange} value={field.value} />}
         />
         <div className="flex flex-row space-x-3 w-full">

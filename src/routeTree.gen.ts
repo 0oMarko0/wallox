@@ -10,217 +10,235 @@
 
 // Import Routes
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as DashboardImport } from './routes/dashboard'
-import { Route as IndexImport } from './routes/index'
-import { Route as SubscriptionsIndexImport } from './routes/subscriptions/index'
-import { Route as SettingsIndexImport } from './routes/settings/index'
-import { Route as SubscriptionsNewImport } from './routes/subscriptions/new'
-import { Route as SubscriptionsSubscriptionIdImport } from './routes/subscriptions/$subscriptionId'
-import { Route as SettingsProfileImport } from './routes/settings/profile'
-import { Route as SettingsEmailImport } from './routes/settings/email'
+import { Route as rootRoute } from './routes/__root';
+import { Route as LogoutImport } from './routes/logout';
+import { Route as DashboardImport } from './routes/dashboard';
+import { Route as IndexImport } from './routes/index';
+import { Route as SubscriptionsIndexImport } from './routes/subscriptions/index';
+import { Route as SettingsIndexImport } from './routes/settings/index';
+import { Route as SubscriptionsNewImport } from './routes/subscriptions/new';
+import { Route as SubscriptionsSubscriptionIdImport } from './routes/subscriptions/$subscriptionId';
+import { Route as SettingsProfileImport } from './routes/settings/profile';
+import { Route as SettingsEmailImport } from './routes/settings/email';
 
 // Create/Update Routes
+
+const LogoutRoute = LogoutImport.update({
+  path: '/logout',
+  getParentRoute: () => rootRoute,
+} as any);
 
 const DashboardRoute = DashboardImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const IndexRoute = IndexImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const SubscriptionsIndexRoute = SubscriptionsIndexImport.update({
   path: '/subscriptions/',
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const SettingsIndexRoute = SettingsIndexImport.update({
   path: '/settings/',
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const SubscriptionsNewRoute = SubscriptionsNewImport.update({
   path: '/subscriptions/new',
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
-const SubscriptionsSubscriptionIdRoute =
-  SubscriptionsSubscriptionIdImport.update({
-    path: '/subscriptions/$subscriptionId',
-    getParentRoute: () => rootRoute,
-  } as any)
+const SubscriptionsSubscriptionIdRoute = SubscriptionsSubscriptionIdImport.update({
+  path: '/subscriptions/$subscriptionId',
+  getParentRoute: () => rootRoute,
+} as any);
 
 const SettingsProfileRoute = SettingsProfileImport.update({
   path: '/settings/profile',
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const SettingsEmailRoute = SettingsEmailImport.update({
   path: '/settings/email',
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
+      id: '/';
+      path: '/';
+      fullPath: '/';
+      preLoaderRoute: typeof IndexImport;
+      parentRoute: typeof rootRoute;
+    };
     '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardImport
-      parentRoute: typeof rootRoute
-    }
+      id: '/dashboard';
+      path: '/dashboard';
+      fullPath: '/dashboard';
+      preLoaderRoute: typeof DashboardImport;
+      parentRoute: typeof rootRoute;
+    };
+    '/logout': {
+      id: '/logout';
+      path: '/logout';
+      fullPath: '/logout';
+      preLoaderRoute: typeof LogoutImport;
+      parentRoute: typeof rootRoute;
+    };
     '/settings/email': {
-      id: '/settings/email'
-      path: '/settings/email'
-      fullPath: '/settings/email'
-      preLoaderRoute: typeof SettingsEmailImport
-      parentRoute: typeof rootRoute
-    }
+      id: '/settings/email';
+      path: '/settings/email';
+      fullPath: '/settings/email';
+      preLoaderRoute: typeof SettingsEmailImport;
+      parentRoute: typeof rootRoute;
+    };
     '/settings/profile': {
-      id: '/settings/profile'
-      path: '/settings/profile'
-      fullPath: '/settings/profile'
-      preLoaderRoute: typeof SettingsProfileImport
-      parentRoute: typeof rootRoute
-    }
+      id: '/settings/profile';
+      path: '/settings/profile';
+      fullPath: '/settings/profile';
+      preLoaderRoute: typeof SettingsProfileImport;
+      parentRoute: typeof rootRoute;
+    };
     '/subscriptions/$subscriptionId': {
-      id: '/subscriptions/$subscriptionId'
-      path: '/subscriptions/$subscriptionId'
-      fullPath: '/subscriptions/$subscriptionId'
-      preLoaderRoute: typeof SubscriptionsSubscriptionIdImport
-      parentRoute: typeof rootRoute
-    }
+      id: '/subscriptions/$subscriptionId';
+      path: '/subscriptions/$subscriptionId';
+      fullPath: '/subscriptions/$subscriptionId';
+      preLoaderRoute: typeof SubscriptionsSubscriptionIdImport;
+      parentRoute: typeof rootRoute;
+    };
     '/subscriptions/new': {
-      id: '/subscriptions/new'
-      path: '/subscriptions/new'
-      fullPath: '/subscriptions/new'
-      preLoaderRoute: typeof SubscriptionsNewImport
-      parentRoute: typeof rootRoute
-    }
+      id: '/subscriptions/new';
+      path: '/subscriptions/new';
+      fullPath: '/subscriptions/new';
+      preLoaderRoute: typeof SubscriptionsNewImport;
+      parentRoute: typeof rootRoute;
+    };
     '/settings/': {
-      id: '/settings/'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsIndexImport
-      parentRoute: typeof rootRoute
-    }
+      id: '/settings/';
+      path: '/settings';
+      fullPath: '/settings';
+      preLoaderRoute: typeof SettingsIndexImport;
+      parentRoute: typeof rootRoute;
+    };
     '/subscriptions/': {
-      id: '/subscriptions/'
-      path: '/subscriptions'
-      fullPath: '/subscriptions'
-      preLoaderRoute: typeof SubscriptionsIndexImport
-      parentRoute: typeof rootRoute
-    }
+      id: '/subscriptions/';
+      path: '/subscriptions';
+      fullPath: '/subscriptions';
+      preLoaderRoute: typeof SubscriptionsIndexImport;
+      parentRoute: typeof rootRoute;
+    };
   }
 }
 
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/settings/email': typeof SettingsEmailRoute
-  '/settings/profile': typeof SettingsProfileRoute
-  '/subscriptions/$subscriptionId': typeof SubscriptionsSubscriptionIdRoute
-  '/subscriptions/new': typeof SubscriptionsNewRoute
-  '/settings': typeof SettingsIndexRoute
-  '/subscriptions': typeof SubscriptionsIndexRoute
+  '/': typeof IndexRoute;
+  '/dashboard': typeof DashboardRoute;
+  '/logout': typeof LogoutRoute;
+  '/settings/email': typeof SettingsEmailRoute;
+  '/settings/profile': typeof SettingsProfileRoute;
+  '/subscriptions/$subscriptionId': typeof SubscriptionsSubscriptionIdRoute;
+  '/subscriptions/new': typeof SubscriptionsNewRoute;
+  '/settings': typeof SettingsIndexRoute;
+  '/subscriptions': typeof SubscriptionsIndexRoute;
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/settings/email': typeof SettingsEmailRoute
-  '/settings/profile': typeof SettingsProfileRoute
-  '/subscriptions/$subscriptionId': typeof SubscriptionsSubscriptionIdRoute
-  '/subscriptions/new': typeof SubscriptionsNewRoute
-  '/settings': typeof SettingsIndexRoute
-  '/subscriptions': typeof SubscriptionsIndexRoute
+  '/': typeof IndexRoute;
+  '/dashboard': typeof DashboardRoute;
+  '/logout': typeof LogoutRoute;
+  '/settings/email': typeof SettingsEmailRoute;
+  '/settings/profile': typeof SettingsProfileRoute;
+  '/subscriptions/$subscriptionId': typeof SubscriptionsSubscriptionIdRoute;
+  '/subscriptions/new': typeof SubscriptionsNewRoute;
+  '/settings': typeof SettingsIndexRoute;
+  '/subscriptions': typeof SubscriptionsIndexRoute;
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/settings/email': typeof SettingsEmailRoute
-  '/settings/profile': typeof SettingsProfileRoute
-  '/subscriptions/$subscriptionId': typeof SubscriptionsSubscriptionIdRoute
-  '/subscriptions/new': typeof SubscriptionsNewRoute
-  '/settings/': typeof SettingsIndexRoute
-  '/subscriptions/': typeof SubscriptionsIndexRoute
+  __root__: typeof rootRoute;
+  '/': typeof IndexRoute;
+  '/dashboard': typeof DashboardRoute;
+  '/logout': typeof LogoutRoute;
+  '/settings/email': typeof SettingsEmailRoute;
+  '/settings/profile': typeof SettingsProfileRoute;
+  '/subscriptions/$subscriptionId': typeof SubscriptionsSubscriptionIdRoute;
+  '/subscriptions/new': typeof SubscriptionsNewRoute;
+  '/settings/': typeof SettingsIndexRoute;
+  '/subscriptions/': typeof SubscriptionsIndexRoute;
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
+  fileRoutesByFullPath: FileRoutesByFullPath;
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/logout'
     | '/settings/email'
     | '/settings/profile'
     | '/subscriptions/$subscriptionId'
     | '/subscriptions/new'
     | '/settings'
-    | '/subscriptions'
-  fileRoutesByTo: FileRoutesByTo
+    | '/subscriptions';
+  fileRoutesByTo: FileRoutesByTo;
   to:
     | '/'
     | '/dashboard'
+    | '/logout'
     | '/settings/email'
     | '/settings/profile'
     | '/subscriptions/$subscriptionId'
     | '/subscriptions/new'
     | '/settings'
-    | '/subscriptions'
+    | '/subscriptions';
   id:
     | '__root__'
     | '/'
     | '/dashboard'
+    | '/logout'
     | '/settings/email'
     | '/settings/profile'
     | '/subscriptions/$subscriptionId'
     | '/subscriptions/new'
     | '/settings/'
-    | '/subscriptions/'
-  fileRoutesById: FileRoutesById
+    | '/subscriptions/';
+  fileRoutesById: FileRoutesById;
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRoute
-  SettingsEmailRoute: typeof SettingsEmailRoute
-  SettingsProfileRoute: typeof SettingsProfileRoute
-  SubscriptionsSubscriptionIdRoute: typeof SubscriptionsSubscriptionIdRoute
-  SubscriptionsNewRoute: typeof SubscriptionsNewRoute
-  SettingsIndexRoute: typeof SettingsIndexRoute
-  SubscriptionsIndexRoute: typeof SubscriptionsIndexRoute
+  IndexRoute: typeof IndexRoute;
+  DashboardRoute: typeof DashboardRoute;
+  LogoutRoute: typeof LogoutRoute;
+  SettingsEmailRoute: typeof SettingsEmailRoute;
+  SettingsProfileRoute: typeof SettingsProfileRoute;
+  SubscriptionsSubscriptionIdRoute: typeof SubscriptionsSubscriptionIdRoute;
+  SubscriptionsNewRoute: typeof SubscriptionsNewRoute;
+  SettingsIndexRoute: typeof SettingsIndexRoute;
+  SubscriptionsIndexRoute: typeof SubscriptionsIndexRoute;
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
+  LogoutRoute: LogoutRoute,
   SettingsEmailRoute: SettingsEmailRoute,
   SettingsProfileRoute: SettingsProfileRoute,
   SubscriptionsSubscriptionIdRoute: SubscriptionsSubscriptionIdRoute,
   SubscriptionsNewRoute: SubscriptionsNewRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   SubscriptionsIndexRoute: SubscriptionsIndexRoute,
-}
+};
 
-export const routeTree = rootRoute
-  ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileTypes<FileRouteTypes>();
 
 /* prettier-ignore-end */
 
@@ -232,6 +250,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/dashboard",
+        "/logout",
         "/settings/email",
         "/settings/profile",
         "/subscriptions/$subscriptionId",
@@ -245,6 +264,9 @@ export const routeTree = rootRoute
     },
     "/dashboard": {
       "filePath": "dashboard.tsx"
+    },
+    "/logout": {
+      "filePath": "logout.tsx"
     },
     "/settings/email": {
       "filePath": "settings/email.tsx"

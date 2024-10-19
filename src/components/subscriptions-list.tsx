@@ -13,7 +13,6 @@ import { ConfirmationDialog } from '@/components/confirmation-dialog.tsx';
 import { NextPaymentDate, Subscription } from '@/subscription.ts';
 import { Link } from '@tanstack/react-router';
 import { IPageable } from '@/IPage.ts';
-import netflix from '../assets/netflix.png';
 import PaymentMethods from '@/components/payments-logo.tsx';
 interface SubscriptionsTableProps {
   subscriptions: IPageable<Subscription>;
@@ -25,24 +24,28 @@ export default function SubscriptionList(props: SubscriptionsTableProps) {
   return (
     <Table className="w-full grow">
       <TableHeader>
-        <TableHead className="hidden w-[100px] sm:table-cell">
-          <span className="sr-only">Image</span>
-        </TableHead>
-        <TableHead>Name</TableHead>
-        <TableHead>Frequency</TableHead>
-        <TableHead className="hidden md:table-cell">Next Payment Date</TableHead>
-        <TableHead className="hidden md:table-cell">Category</TableHead>
-        <TableHead className="hidden md:table-cell">Price</TableHead>
-        <TableHead>
-          <span className="sr-only">Actions</span>
-        </TableHead>
+        <TableRow>
+          <TableHead className="hidden w-[100px] sm:table-cell">
+            <span className="sr-only">Image</span>
+          </TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead>Frequency</TableHead>
+          <TableHead className="hidden md:table-cell">Next Payment Date</TableHead>
+          <TableHead className="hidden md:table-cell">Category</TableHead>
+          <TableHead className="hidden md:table-cell">Price</TableHead>
+          <TableHead>
+            <span className="sr-only">Actions</span>
+          </TableHead>
+        </TableRow>
       </TableHeader>
       <TableBody className="w-full">
         {props.subscriptions.items.map((subscription: Subscription) => (
           <TableRow key={subscription.id}>
             <TableCell className="font-medium">
               {' '}
-              <img src={netflix} alt="Logo" className="object-cover" />
+              {subscription.files ? (
+                <img src={subscription.files.file_path} alt="Logo" className="object-cover" />
+              ) : null}
             </TableCell>
             <TableCell className="font-medium">{subscription.name}</TableCell>
             <TableCell className="font-medium">
