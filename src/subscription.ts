@@ -4,10 +4,12 @@ import { HandleError, Supabase } from '@/supabase-client.ts';
 import { add } from 'date-fns';
 import { CategorySchema } from '@/category.ts';
 import { PaymentMethodsSchema } from '@/payment-methods.ts';
-import { Page, PageToRange } from '@/page.ts';
+import { EmptyPage, IPage, IPageable, PageToRange } from '@/IPage.ts';
+import { FileSchema } from '@/files.ts';
 
 const SUBSCRIPTION_TABLE = 'subscriptions';
 
+// TODO: need to split the db shema and the form schema
 const SubscriptionSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(2).max(50),
@@ -22,14 +24,22 @@ const SubscriptionSchema = z.object({
   category_id: z.number(),
   paid_by: z.string().min(0),
   note: z.string().min(0),
-  category: CategorySchema.optional(),
+  categories: CategorySchema.optional(),
   payment_methods: PaymentMethodsSchema.optional(),
+  file_id: z.number().optional(),
+  files: FileSchema.optional(),
 });
 
 const FormSubscriptionSchema = SubscriptionSchema.omit({
   id: true,
-  category: true,
+  categories: true,
   payment_methods: true,
+}).extend({
+  file: z
+    .instanceof(File)
+    .refine((file) => file.size <= 5 * 1024 * 1024, 'File size must be under 5MB')
+    .refine((file) => ['image/jpeg', 'image/png'].includes(file.type), 'Only .jpeg or .png files are allowed')
+    .optional(),
 });
 
 type Subscription = z.infer<typeof SubscriptionSchema>;
@@ -57,8 +67,9 @@ const NextPaymentDate = (subscription: Subscription) => {
   }
 };
 
-const ListSubscriptions = async (page: Page): Promise<Subscription[]> => {
+const ListSubscriptions = async (page: IPage): Promise<IPageable<Subscription>> => {
   const { start, end } = PageToRange(page);
+  const { count } = await Supabase.from(SUBSCRIPTION_TABLE).select('*', { count: 'exact' });
   const { data, error } = await Supabase.from(SUBSCRIPTION_TABLE)
     .select(
       `
@@ -73,8 +84,10 @@ const ListSubscriptions = async (page: Page): Promise<Subscription[]> => {
           created_at,
           category_id,
           payment_methods_id,
+          file_id,
           categories (name),
-          payment_methods (name)
+          payment_methods (name),
+          files (file_name, file_path)
     `,
     )
     .order('created_at', { ascending: false })
@@ -84,33 +97,32 @@ const ListSubscriptions = async (page: Page): Promise<Subscription[]> => {
   HandleError(error);
 
   if (data === null || data === undefined) {
-    return [];
+    return EmptyPage;
   }
 
-  return data.map((subscription) => ({
+  data.map((subscription) => ({
     ...subscription,
     last_payment_date: new Date(subscription.last_payment_date),
   }));
+
+  return {
+    ...page,
+    items: data,
+    total: count as number,
+  };
 };
 
-const CountSubscriptions = async () => {
-  const { error, count } = await Supabase.from(SUBSCRIPTION_TABLE).select('*', { count: 'exact' });
+const FetchSubscription = async (id: string): Promise<Subscription | null> => {
+  const { error, data } = await Supabase.from(SUBSCRIPTION_TABLE).select().eq('id', id).maybeSingle();
+
   HandleError(error);
 
-  return count;
+  return data as Subscription;
 };
 
 const DeleteSubscription = async (subscription: Subscription) => {
   const { error } = await Supabase.from(SUBSCRIPTION_TABLE).delete().eq('id', subscription.id);
   HandleError(error);
-};
-
-const CreateOrUpdateSubscription = async (subscription: Subscription) => {
-  if (subscription?.id) {
-    await UpdateSubscription(subscription.id, subscription);
-  } else {
-    await CreateSubscription(subscription);
-  }
 };
 
 const UpdateSubscription = async (id: string, subscription: Subscription) => {
@@ -119,6 +131,7 @@ const UpdateSubscription = async (id: string, subscription: Subscription) => {
 };
 
 const CreateSubscription = async (subscription: Subscription) => {
+  console.log(subscription);
   const { error } = await Supabase.from(SUBSCRIPTION_TABLE).insert(subscription).select();
   HandleError(error);
 };
@@ -129,9 +142,8 @@ export {
   DefaultSubscription,
   NextPaymentDate,
   ListSubscriptions,
-  CountSubscriptions,
   DeleteSubscription,
-  CreateOrUpdateSubscription,
+  FetchSubscription,
   CreateSubscription,
   UpdateSubscription,
 };
